@@ -31,6 +31,47 @@ const App = () => {
     return () => clearInterval(timer)
   }, [playing, timeElaspsed])
 
+  //Verify if opened cards are equal
+  useEffect(() => {
+    if(shownCount === 2) {
+      let opened = gridItems.filter(item => item.shown === true);
+      if(opened.length === 2) {
+        
+        if(opened[0].item === opened[1].item) {
+          //if both are equal, make them permanetly opened
+          let tempGrid = [...gridItems]
+          for(let i in tempGrid) {
+            if(tempGrid[i].shown){
+              tempGrid[i].permanentShown = true
+              tempGrid[i].shown = false
+            }
+          }
+          setGridItems(tempGrid)
+          setShownCount(0)
+        } else {
+          setTimeout(()=>{
+            //if they are not equal, close all cards
+          let tempGrid = [...gridItems]
+          for(let i in tempGrid) {
+              tempGrid[i].shown = false
+          }
+          setGridItems(tempGrid)
+          setShownCount(0)
+          }, 1000) 
+        }
+
+        setMoveCount(moveCount => moveCount + 1)
+      }
+    }
+  },[shownCount, gridItems])
+
+  //verify if game is over
+  useEffect(()=>{
+    if(moveCount > 5 && gridItems.every(item => item.permanentShown === true)) {
+      setPlaying(false)
+    }
+  }, [moveCount, gridItems])
+
   const resetAndCreateGrid = () => {
     //Passo 1 - resetar o jogo
     setTimeElapsed(0)
@@ -89,7 +130,7 @@ const App = () => {
 
         <C.InfoArea>
          <InfoItem label='Tempo' value={formatTime(timeElaspsed)}></InfoItem>
-         <InfoItem label='Movimentos' value='0'></InfoItem>
+         <InfoItem label='Movimentos' value={moveCount.toString()}></InfoItem>
         </C.InfoArea>
 
         <Button label='Reiniciar' icon={RestartIcon} onClick={resetAndCreateGrid}/>
