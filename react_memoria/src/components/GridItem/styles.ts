@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 type ContainerProps = {
-    showBackground: boolean
+    showBackground?: boolean
 }
 
 export const Container = styled.div<ContainerProps>`
